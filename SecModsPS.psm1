@@ -29,12 +29,29 @@ function Get-InputDigest(){
     param(
 
         # Parameter help description
-        [Parameter(Mandatory=$true)]
         [string]$inputObject,
         [String]$Algorith='sha256',
-        [string]$Path
+        [string]$PathContent
 
     )
+
+
+    if($PathContent -ne $null){
+
+      if(Test-Path $PathContent){
+
+      $content = Get-Content -Path $PathContent
+
+      $hash=[System.Security.Cryptography.HashAlgorithm]::Create($Algorith).ComputeHash([System.Text.Encoding]::UTF8.GetBytes($content))
+      $final=[System.BitConverter]::ToString($hash).replace("-","").ToLower()
+
+      } else{
+
+        Write-Error 'The Path supplied is incorrect!'
+
+      }
+
+    }
 
 
     $hash=[System.Security.Cryptography.HashAlgorithm]::Create($Algorith).ComputeHash([System.Text.Encoding]::UTF8.GetBytes($inputObject))
